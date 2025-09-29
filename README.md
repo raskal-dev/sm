@@ -35,14 +35,14 @@ sm/
 │   │       │   └── validators/
 │   │       │       └── product.validator.ts
 │   │       │
-│   │       └── infrastructure/         # Technique
-│   │           ├── controllers/
-│   │           │   └── product.controller.ts
-│   │           ├── repositories/
-│   │           │   └── product.repository.ts    # Implémentation TypeORM
-│   │           ├── notifications/
-│   │           │   └── product-notification.adapter.ts
-│   │           └── product.module.ts   # Déclaration officielle du module
+│   │       ├── infrastructure/         # Technique
+│   │       │   ├── controllers/
+│   │       │   │   └── product.controller.ts
+│   │       │   ├── repositories/
+│   │       │   │   └── product.repository.ts    # Implémentation TypeORM
+│   │       │   └── notifications/
+│   │       │      └── product-notification.adapter.ts
+│   │       └── product.module.ts   # Déclaration officielle du module
 │   │
 │   ├── app.module.ts                   # Module racine
 │   └── main.ts                         # Point d’entrée
