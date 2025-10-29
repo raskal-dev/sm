@@ -14,49 +14,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String     @id @default(uuid())
-  firstName String?
-  lastName  String
-  email     String     @unique
-  tel       String?
-  address   String?
-  image     String?    // photo de profil optionnelle
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+//
+// ============================
+// ENUMS
+// ============================
+//
 
-  accounts  Account[]
-  sessions  Session[]
+enum Role {
+  ADMIN
+  USER
+}
+
+//
+// ============================
+// AUTHENTICATION & USER
+// ============================
+//
+
+model User {
+  id           String    @id @default(uuid())
+  firstName    String?
+  lastName     String
+  email        String    @unique
+  tel          String?
+  address      String?
+  image        String?
+  passwordHash String?
+  roles        Role[]    @default([USER])
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  tokens   VerificationToken[]
 }
 
 model Account {
-  id                String   @id @default(uuid())
+  id                String  @id @default(uuid())
   userId            String
-  type              String   // "credentials" | "oauth"
-  provider          String   // "google" | "github" | "local"
-  providerAccountId String   // id du compte côté provider
+  type              String // "credentials" | "oauth"
+  provider          String // "google" | "github" | "local"
+  providerAccountId String // id du compte côté provider
   refresh_token     String?
   access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
 
-  user              User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id        String   @id @default(uuid())
-  sessionToken String @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  expires   DateTime
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent    String?
+  ipAddress    String?
+  revoked      Boolean  @default(false)
+  expires      DateTime
+  createdAt    DateTime @default(now())
 }
 
 model VerificationToken {
   id         String   @id @default(uuid())
+  identifier String?
   token      String   @unique
+  type       String? // "email_verification" | "password_reset"
   expires    DateTime
+  createdAt  DateTime @default(now())
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     String?
 }
